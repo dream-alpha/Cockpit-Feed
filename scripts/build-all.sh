@@ -48,8 +48,13 @@ for pkg_dir in "$ROOT_DIR"/*-package; do
         
         print_info "Building $pkg_name for architecture: $arch"
         
-        # Build the package
-        if "$SCRIPT_DIR/build-package.sh" "$pkg_dir" "$arch"; then
+        # Build the package (temporarily disable exit on error for controlled failure handling)
+        set +e
+        "$SCRIPT_DIR/build-package.sh" "$pkg_dir" "$arch"
+        build_result=$?
+        set -e
+        
+        if [ $build_result -eq 0 ]; then
             print_info "Successfully built $pkg_name"
             package_count=$((package_count + 1))
         else
@@ -71,14 +76,12 @@ print_info "Built $package_count package(s)"
 
 if [ $failed_packages -gt 0 ]; then
     print_error "$failed_packages package(s) failed to build"
+    print_error "Skipping index generation due to build failures"
+    exit 1
 fi
 
 # Generate package indexes
 print_info "Generating package indexes"
 "$SCRIPT_DIR/generate-index.sh"
-
-if [ $failed_packages -gt 0 ]; then
-    exit 1
-fi
 
 print_info "Build process completed successfully"

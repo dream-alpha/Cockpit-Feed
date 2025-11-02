@@ -109,10 +109,12 @@ else
     tar czf control.tar.gz -C CONTROL .
     
     # Create data.tar.gz (exclude CONTROL directory)
-    if [ -d "data" ] || [ -d "usr" ] || [ -d "opt" ] || [ -d "etc" ]; then
-        find . -path ./CONTROL -prune -o -type f -print | tar czf data.tar.gz -T -
+    # List all items except CONTROL and build files
+    if [ -n "$(find . -mindepth 1 -maxdepth 1 ! -name CONTROL ! -name control.tar.gz ! -name data.tar.gz ! -name debian-binary -print -quit)" ]; then
+        tar czf data.tar.gz --exclude='./CONTROL' --exclude='./control.tar.gz' --exclude='./data.tar.gz' --exclude='./debian-binary' \
+            $(find . -mindepth 1 -maxdepth 1 ! -name CONTROL ! -name '*.tar.gz' ! -name debian-binary -printf '%P\n')
     else
-        # Empty data archive
+        # Empty data archive if no files found
         tar czf data.tar.gz --files-from /dev/null
     fi
     

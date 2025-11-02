@@ -58,13 +58,18 @@ extract_package_info() {
     if [ -f "control.tar.gz" ]; then
         tar xzf control.tar.gz
         if [ -f "control" ]; then
-            # Get file size and MD5
-            local size=$(stat -f%z "$ipk_file" 2>/dev/null || stat -c%s "$ipk_file" 2>/dev/null)
-            local md5sum_cmd="md5sum"
-            if ! command -v md5sum &> /dev/null; then
-                md5sum_cmd="md5 -q"
+            # Get file size (portable approach)
+            local size=$(wc -c < "$ipk_file" | tr -d ' ')
+            
+            # Get MD5 checksum (portable approach)
+            local md5
+            if command -v md5sum &> /dev/null; then
+                md5=$(md5sum "$ipk_file" | awk '{print $1}')
+            elif command -v md5 &> /dev/null; then
+                md5=$(md5 -q "$ipk_file")
+            else
+                md5="unknown"
             fi
-            local md5=$($md5sum_cmd "$ipk_file" | awk '{print $1}')
             local filename=$(basename "$ipk_file")
             
             # Print control file content
