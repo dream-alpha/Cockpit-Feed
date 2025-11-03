@@ -65,7 +65,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: gh-pages
+          ref: main
           fetch-depth: 0
       
       - name: Download package feed
@@ -86,7 +86,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update package feed indexes [skip ci]"
-            git push origin gh-pages
+            git push origin main
           fi
         continue-on-error: true
       
