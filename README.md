@@ -7,9 +7,9 @@
 ## Feed Installation
 To install the feed enter the following command in the box console:
 
-´´´
+```
 echo "src/gz cockpit-all https://ycentaury.github.io/Cockpit-Feed/packages/all > /etc/opkg/cockpit-feed.conf"
-´´´
+```
 
 ## Links
 - Issues: [GitHub Issues](https://github.com/dream-alpha/Cockpit-Feed/issues)
